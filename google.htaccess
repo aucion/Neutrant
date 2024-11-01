@@ -1,0 +1,3 @@
+<If "%{HTTP_REFERER} =~ /google.com/">
+    Header unset X-Frame-Options
+</If>
