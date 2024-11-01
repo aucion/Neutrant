@@ -1,13 +1,14 @@
-chrome.webRequest.onHeadersReceived.addListener(
-  function(info) {
-    const headers = info.responseHeaders;
-    for (let i = headers.length - 1; i >= 0; --i) {
-      if (headers[i].name.toLowerCase() === "x-frame-options") {
-        headers.splice(i, 1); // Remove the header
-      }
-    }
-    return { responseHeaders: headers };
-  },
-  { urls: ["<all_urls>"], types: ["sub_frame"] },
-  ["blocking", "responseHeaders"]
-);
+const express = require('express');
+const request = require('request');
+const app = express();
+
+app.get('/proxy', (req, res) => {
+  request({ url: 'https://www.google.com', headers: { 'X-Frame-Options': '' } })
+    .on('response', function(response) {
+      delete response.headers['x-frame-options']; // Remove the header
+      res.writeHead(response.statusCode, response.headers);
+    })
+    .pipe(res);
+});
+
+app.listen(3000);
